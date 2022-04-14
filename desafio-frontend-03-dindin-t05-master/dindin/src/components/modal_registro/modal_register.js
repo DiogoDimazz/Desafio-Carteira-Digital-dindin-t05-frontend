@@ -10,19 +10,22 @@ export default function ModalRegister({
     modalType,
     transactionData,
     categoryList,
-    token
+    token,
+    resetPage,
+    setResetPage
 }) {
     const [entryType, setEntryType] = useState(true)
-    const [currentCategory, setCurrentCategory] = useState({})
     const [showCategoryList, setShowCategoryList] = useState(false)
     const [dataWarning, setDataWarning] = useState('')
     const [valueToShow, setValueToShow] = useState('')
     const [dateToShow, setDateToShow] = useState('')
-    const [categoryToShow, setCategoryToShow] = useState('')
     const [currentIdTransaction, setCurrentIdTransaction] = useState(0)
+    const [readyToFill, setReadyToFill] = useState(false)
+    const [categoryToShow, setCategoryToShow] = useState('')
     const [form, setForm] = useState({
         tipo: 'entrada',
         valor: '',
+        categoria: '',
         categoria_id: null,
         data: '',
         descricao: ''
@@ -37,12 +40,14 @@ export default function ModalRegister({
         return
     }
 
-
     async function handleAddRegister(e) {
         e.preventDefault()
 
+        if (!parseInt(form.data)) {
+            return handleErrorMessage('Data inválida. Utilizar somente números')
+        }
         if (form.data.length !== 6) {
-            return setDataWarning('Data inválida. Favor preencher com 6 dígitos')
+            return handleErrorMessage('Data inválida. Favor preencher com 6 dígitos.')
         }
 
         const splitData = form.data.split('')
@@ -51,7 +56,7 @@ export default function ModalRegister({
         try {
             await api.post('/transacao', {
                 description: form.descricao,
-                amount: form.valor,
+                amount: parseInt(form.valor),
                 date: stringData,
                 idcategory: form.categoria_id,
                 type: form.tipo
@@ -67,16 +72,61 @@ export default function ModalRegister({
         }
 
         setShowModalRegister(false)
+        setResetPage(!resetPage)
+    }
+
+    async function fetchTransactionData(res, req) {
+        try {
+            const response = await api.get(`transacao/${transactionData.id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+
+            const e = response.data[0].data
+            const newDateString = `${e.slice(8, 10)}${e.slice(5, 7)}${e.slice(2, 4)}`
+
+            setForm({
+                tipo: response.data[0].tipo,
+                valor: (response.data[0].valor).toString(),
+                categoria: response.data[0].categoria_nome,
+                categoria_id: response.data[0].categoria_id,
+                data: newDateString,
+                descricao: response.data[0].descricao
+            })
+            setCurrentIdTransaction(response.data[0].id)
+
+            setReadyToFill(true)
+
+        } catch (error) {
+            res.status(400).json(error.response.data.message)
+        }
     }
 
     async function handleEditRegister(e) {
         e.preventDefault()
+
+        console.log(currentIdTransaction);
+
+
+        if (!parseInt(form.data)) {
+            return handleErrorMessage('Data inválida. Utilizar somente números')
+        }
+        if (form.data.length !== 6) {
+            return handleErrorMessage('Data inválida. Favor preencher com 6 dígitos.')
+        }
+
+        const splitData = form.data.split('')
+        const stringData = `${splitData[4]}${splitData[5]}${splitData[2]}${splitData[3]}${splitData[0]}${splitData[1]}`
+
+
         try {
             await api.put(`/transacao/${currentIdTransaction}`, {
                 description: form.descricao,
                 amount: form.valor,
-                date: form.data,
-                idcategory: form.categoria,
+                date: stringData,
+                idcategory: form.categoria_id,
                 type: form.tipo
             }, {
                 headers: {
@@ -89,11 +139,7 @@ export default function ModalRegister({
         }
 
         setShowModalRegister(false)
-    }
-
-
-    function openCategoryList() {
-        setShowCategoryList(!showCategoryList)
+        setResetPage(!resetPage)
     }
 
     function entryTypeEntrada() {
@@ -106,26 +152,27 @@ export default function ModalRegister({
         setForm({ ...form, tipo: 'saida' })
     }
 
+
     function handleValue(e) {
         setValueToShow(e)
         setForm({ ...form, valor: e })
     }
 
     function handleFormatValue(e) {
-        if (!e) { return }
-
-        const rawValue = (((parseInt(e, 10)) / 100).toFixed(2)).toString()
+        const rawValue = ((e / 100).toFixed(2)).toString()
         setValueToShow(rawValue.replace('.', ','))
     }
 
-
+    function openCategoryList() {
+        setShowCategoryList(!showCategoryList)
+    }
 
     function handleSelectCategory(cat) {
+        setForm({ ...form, categoria: cat })
         setCategoryToShow(cat)
         const category = categoryList.find((c) => {
             return c.descricao === cat
         })
-
         setForm({ ...form, categoria_id: category.id })
         setShowCategoryList(false)
     }
@@ -137,65 +184,37 @@ export default function ModalRegister({
             setDateToShow(adjustData)
             return
         }
-
         setForm({ ...form, data: e })
         setDateToShow(e)
-
     }
 
     function handleDateFormat(e) {
-        if (!e) { return }
-
         const newDateString = `${e.slice(0, 2)}/${e.slice(2, 4)}/${e.slice(4)}`
         setDateToShow(newDateString)
     }
 
-
-    function findCategory() {
-        const localCategory = categoryList.find((category) => {
-            return category.id === transactionData.categoria_id
-        })
-
-        setCurrentCategory({ ...localCategory })
-    }
-
-    function fillEditForm() {
-        setForm({
-            tipo: transactionData.tipo,
-            valor: transactionData.valor,
-            categoria: currentCategory.id,
-            data: transactionData.data,
-            descricao: transactionData.descricao
-        })
-
-        if (transactionData.tipo === 'entrada') { setEntryType(true) } else { setEntryType(false) }
-        setDateToShow(format(new Date(transactionData.data), 'dd/MM/yy'))
-        setCategoryToShow(currentCategory.descricao)
-        handleFormatValue(transactionData.valor)
-        setCurrentIdTransaction(transactionData.id)
-    }
-
     useEffect(() => {
+        console.log('useEffect 3 do modal_register');
+        if (readyToFill) {
+            if (form.tipo === 'entrada') { setEntryType(true) } else { setEntryType(false) }
+            handleFormatValue(form.valor)
+            handleSelectCategory(form.categoria)
+            handleDateFormat(form.data)
+            setReadyToFill(false)
+        }
 
         return () => {
+            console.log('desmontei o useEffect 3 do modal_register');
         }
-    }, [form])
+    }, [readyToFill])
+
 
     useEffect(() => {
         if (modalType) { return }
-        fillEditForm()
+        fetchTransactionData()
 
         return () => {
-        }
-
-    }, [currentCategory])
-
-    useEffect(() => {
-
-        if (modalType) { return }
-        findCategory()
-
-        return () => {
+            console.log('desmontei o useEffect 1 do modal_register');
         }
 
     }, [])
@@ -258,7 +277,7 @@ export default function ModalRegister({
                         value={valueToShow}
                         onChange={(e) => handleValue(e.target.value)}
                         onBlur={(e) => handleFormatValue(e.target.value)}
-                        onFocus={(e) => setValueToShow(form.valor)}
+                        onFocus={() => setValueToShow(form.valor)}
                     />
                     <div className='category-select-box'>
                         <label htmlFor='categoria'>Categoria</label>
@@ -281,6 +300,7 @@ export default function ModalRegister({
                             >
                                 {categoryList.map((category) => (
                                     <li
+                                        key={category.id}
                                         onClick={(e) => handleSelectCategory(e.target.textContent)}
                                         className='li-category'
                                     >{category.descricao}</li>

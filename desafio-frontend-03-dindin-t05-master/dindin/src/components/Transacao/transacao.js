@@ -70,7 +70,6 @@ export default function Transacao({
     }
 
     function categoryDescription() {
-
         const categoryName = categoryList.find((c) => {
             return c.id === transData.categoria_id
         })
@@ -99,20 +98,22 @@ export default function Transacao({
     }
 
     useEffect(() => {
+        console.log('useEffect 3 do transacao');
+
         return () => {
+            console.log('desmontei - useEffect 3 do transacao');
         }
     }, [currentCategory])
 
-    useEffect(() => {
-        categoryDescription()
-        return () => {
-        }
-    }, [weekDay])
 
     useEffect(() => {
-        dateInfo(transData.data)
+        console.log('useEffect 1 do transacao');
         setLocalDescription(transData.descricao)
+        dateInfo(transData.data)
+        categoryDescription()
+
         return () => {
+            console.log('desmontei - useEffect 1 do transacao');
         }
     }, [])
 

@@ -46,8 +46,6 @@
     font-weight: 700;
     font-size: 12px;
 
-    background-color: #fafafa;
-
     border: none;
     box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
@@ -55,13 +53,13 @@
     cursor: pointer;
 }
 
+.limpar-filtro-clicked,
+.aplicar-filtro-clicked {
+    color: #FAFAFA;
+    background-color: rgb(121, 120, 217);
+}
+
 .limpar-filtro-btn:hover,
 .aplicar-filtro-btn:hover {
     background-color: rgb(240, 240, 240);
-}
-
-.limpar-filtro-clicked,
-.aplicar-filtro-clicked {
-    background-color: rgb(121, 120, 217);
-    color: #FAFAFA;
 }

@@ -10,6 +10,7 @@ export default function FilterBox({ categoryList }) {
 
     function handleApplyFilter() {
         setApplyFilter(!applyFilter)
+        console.log(applyFilter);
     }
 
     function handleClearFilter() {
@@ -25,6 +26,8 @@ export default function FilterBox({ categoryList }) {
 
     useEffect(() => {
 
+        return () => {
+        }
     }, [noSelection])
 
     return (
@@ -34,12 +37,14 @@ export default function FilterBox({ categoryList }) {
                 <div className='category-list-box'>
                     {categoryList.map((category) => (
                         <CategoryBtn
+                            key={category.id}
                             category={category}
                             selectedCategories={selectedCategories}
                             setSelectedCategories={setSelectedCategories}
                             handleClearFilter={handleClearFilter}
                             noSelection={noSelection}
                             setNoSelection={setNoSelection}
+                            clearClick={clearClick}
                         />
                     ))}
                 </div>
@@ -56,11 +61,11 @@ export default function FilterBox({ categoryList }) {
                     Limpar Filtros
                 </button>
                 <button
+                    onClick={() => handleApplyFilter()}
                     className={applyFilter
                         ? 'aplicar-filtro-clicked'
                         : 'aplicar-filtro-btn'
                     }
-                    onClick={() => handleApplyFilter()}
                 >
                     Aplicar Filtros</button>
             </div>

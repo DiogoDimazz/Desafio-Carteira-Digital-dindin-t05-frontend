@@ -3,7 +3,7 @@ import closeBtn from '../../assets/close_btn.svg'
 import { useEffect, useState } from 'react'
 import api from '../../services/api'
 
-export default function UserModal({ setShowModalUser, user, setUser, token }) {
+export default function UserModal({ setShowModalUser, user, setUser, token, resetPage, setResetPage }) {
     const [form, setForm] = useState({
         name: user.nome,
         email: user.email,
@@ -40,6 +40,7 @@ export default function UserModal({ setShowModalUser, user, setUser, token }) {
             return res.status(400).json(error.response.data.message)
         }
         setShowModalUser(false)
+        setResetPage(!resetPage)
     }
 
     function handleSubmitEditUser(e) {

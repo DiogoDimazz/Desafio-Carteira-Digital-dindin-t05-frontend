@@ -22,6 +22,7 @@ export default function Main() {
     const [showModalUser, setShowModalUser] = useState(false)
     const [categoryList, setCategoryList] = useState([])
     const [modalType, setModalType] = useState(null)
+    const [resetPage, setResetPage] = useState(false)
     const token = getItem('token')
 
 
@@ -48,6 +49,7 @@ export default function Main() {
                 }
             })
             setCategoryList(response.data)
+            setResetPage(!resetPage)
         } catch (error) {
             res.status(400).json(error.response.data.message)
         }
@@ -74,26 +76,26 @@ export default function Main() {
 
 
     useEffect(() => {
+        console.log('useEffect 1 the Main - Só na Montagem');
         fetchCategoryList()
 
         return () => {
         }
-    }, [transactionArray])
+    }, [])
 
     useEffect(() => {
-        createTransactionArray()
+        if (!showModalRegister) {
+            console.log('useEffect 2 - transaction array');
+            createTransactionArray()
+        }
+        if (!showModalUser) {
+            console.log('useEffect 3 the Main - user data');
+            fillUserData()
+        }
 
         return () => {
         }
-    }, [user])
-
-    useEffect(() => {
-        fillUserData()
-
-        return () => {
-        }
-    }, [showModalRegister, showModalUser, transactionArray])
-
+    }, [resetPage])
 
     return (
         <div className='body-clean'>
@@ -157,7 +159,7 @@ export default function Main() {
                         </div>
                         <div className='right-inner-container'>
                             <Resumo
-                                transactionArray={transactionArray}
+                                token={token}
                                 openModalRegister={openModalRegister}
                                 setModalType={setModalType}
                             />
@@ -171,6 +173,8 @@ export default function Main() {
                     user={user}
                     setUser={setUser}
                     token={token}
+                    resetPage={resetPage}
+                    setResetPage={setResetPage}
                 />
             }
             {showModalRegister &&
@@ -180,6 +184,8 @@ export default function Main() {
                     transactionData={transactionData}
                     categoryList={categoryList}
                     token={token}
+                    resetPage={resetPage}
+                    setResetPage={setResetPage}
                 />
             }
         </div>

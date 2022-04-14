@@ -3,7 +3,14 @@ import categoryBtnSelect from '../../assets/category_add_btn.svg'
 import categoryBtnDeselect from '../../assets/category_close_btn.svg'
 import { useEffect, useState } from 'react'
 
-export default function CategoryBtn({ category, selectedCategories, setSelectedCategories, noSelection, setNoSelection }) {
+export default function CategoryBtn({
+    category,
+    selectedCategories,
+    setSelectedCategories,
+    noSelection,
+    setNoSelection,
+    clearClick
+}) {
     const [localSelectedCategory, setLocalSelectedCategory] = useState(false)
     const localSelectedCategories = [...selectedCategories]
 
@@ -13,9 +20,7 @@ export default function CategoryBtn({ category, selectedCategories, setSelectedC
             const categoryToRemove = localSelectedCategories.findIndex((cat) => {
                 return cat === id
             })
-            console.log(categoryToRemove);
             localSelectedCategories.splice(categoryToRemove, 1)
-            console.log(localSelectedCategories);
         } else {
             localSelectedCategories.push(id)
         }
@@ -24,13 +29,15 @@ export default function CategoryBtn({ category, selectedCategories, setSelectedC
     }
 
     useEffect(() => {
+        console.log('useEffect do category btn');
         if (noSelection) {
             setLocalSelectedCategory(false)
         }
 
         return () => {
+            console.log('desmontei o category btn');
         }
-    })
+    }, [clearClick])
 
     return (
         <div>
