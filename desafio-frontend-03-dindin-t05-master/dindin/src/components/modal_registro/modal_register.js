@@ -2,7 +2,6 @@ import './styles.css'
 import closeBtn from '../../assets/close_btn.svg'
 import { useEffect, useState } from 'react'
 import downArrowSelect from '../../assets/down_arrow.svg'
-import { format } from 'date-fns'
 import api from '../../services/api'
 
 export default function ModalRegister({
@@ -83,19 +82,19 @@ export default function ModalRegister({
                 }
             })
 
+            const e = response.data.data
 
-            const e = response.data[0].data
             const newDateString = `${e.slice(8, 10)}${e.slice(5, 7)}${e.slice(2, 4)}`
 
             setForm({
-                tipo: response.data[0].tipo,
-                valor: (response.data[0].valor).toString(),
-                categoria: response.data[0].categoria_nome,
-                categoria_id: response.data[0].categoria_id,
+                tipo: response.data.tipo,
+                valor: (response.data.valor).toString(),
+                categoria: response.data.categoria_nome,
+                categoria_id: response.data.categoria_id,
                 data: newDateString,
-                descricao: response.data[0].descricao
+                descricao: response.data.descricao
             })
-            setCurrentIdTransaction(response.data[0].id)
+            setCurrentIdTransaction(response.data.id)
 
             setReadyToFill(true)
 
@@ -210,6 +209,7 @@ export default function ModalRegister({
 
 
     useEffect(() => {
+        console.log('Useeffect 1 do modal_register');
         if (modalType) { return }
         fetchTransactionData()
 

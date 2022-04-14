@@ -9,20 +9,23 @@ export default function CategoryBtn({
     setSelectedCategories,
     noSelection,
     setNoSelection,
-    clearClick
+    clearClick,
+    applyFilter
 }) {
     const [localSelectedCategory, setLocalSelectedCategory] = useState(false)
     const localSelectedCategories = [...selectedCategories]
 
-    function handleSelectCategory(id) {
+    function handleSelectCategory(category) {
+        if (applyFilter) { return }
+
         setNoSelection(false)
         if (localSelectedCategory) {
             const categoryToRemove = localSelectedCategories.findIndex((cat) => {
-                return cat === id
+                return cat === category
             })
             localSelectedCategories.splice(categoryToRemove, 1)
         } else {
-            localSelectedCategories.push(id)
+            localSelectedCategories.push(category)
         }
         setSelectedCategories([...localSelectedCategories])
         setLocalSelectedCategory(!localSelectedCategory)

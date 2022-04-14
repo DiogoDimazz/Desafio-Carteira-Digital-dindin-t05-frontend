@@ -15,6 +15,8 @@ import UserModal from '../../components/modal_user/modal_user'
 export default function Main() {
     const [deleteBoxOpen, setDeleteBoxOpen] = useState(false)
     const [transactionArray, setTransactionArray] = useState([])
+    const [noSelection, setNoSelection] = useState(true)
+    const [selectedCategories, setSelectedCategories] = useState([])
     const [transactionData, setTransactionData] = useState({})
     const [user, setUser] = useState({ id: null, name: '', email: '' })
     const [openFilter, setOpenFilter] = useState(false)
@@ -23,6 +25,7 @@ export default function Main() {
     const [categoryList, setCategoryList] = useState([])
     const [modalType, setModalType] = useState(null)
     const [resetPage, setResetPage] = useState(false)
+    const [clearClick, setClearClick] = useState(false)
     const token = getItem('token')
 
 
@@ -70,6 +73,7 @@ export default function Main() {
         }
     }
 
+
     function openModalRegister() {
         setShowModalRegister(true)
     }
@@ -84,7 +88,7 @@ export default function Main() {
     }, [])
 
     useEffect(() => {
-        if (!showModalRegister) {
+        if (!showModalRegister && noSelection) {
             console.log('useEffect 2 - transaction array');
             createTransactionArray()
         }
@@ -116,6 +120,16 @@ export default function Main() {
                     {openFilter &&
                         <FilterBox
                             categoryList={categoryList}
+                            selectedCategories={selectedCategories}
+                            setSelectedCategories={setSelectedCategories}
+                            transactionArray={transactionArray}
+                            setTransactionArray={setTransactionArray}
+                            setResetPage={setResetPage}
+                            resetPage={resetPage}
+                            clearClick={clearClick}
+                            setClearClick={setClearClick}
+                            noSelection={noSelection}
+                            setNoSelection={setNoSelection}
                         />
                     }
                     <div className='second-inner-container'>
