@@ -1,0 +1,43 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    height: 43px;
+    padding-left: 100px;
+    padding-right: 100px;
+    margin-bottom: 30px;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-usuario {
+    display: flex;
+    align-items: center;
+}
+
+.header-usuario span {
+    margin-right: 16px;
+    margin-left: 3px;
+
+    color: white;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+header h2 {
+    color: white;
+    font-family: 'Rubik', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.user-icon,
+.log-off-btn {
+    cursor: pointer;
+}

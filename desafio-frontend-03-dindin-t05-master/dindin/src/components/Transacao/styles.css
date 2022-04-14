@@ -1,0 +1,131 @@
+.transaction-row {
+    display: flex;
+    align-items: center;
+    padding: 21px 28px 22px;
+
+    position: relative;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 33px;
+
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+}
+
+.info-data {
+    width: 164px;
+    display: flex;
+    justify-content: flex-start;
+
+    font-weight: 700;
+}
+
+.info-dia {
+    width: 127px;
+
+    font-weight: 400;
+}
+
+.info-descricao {
+    width: 287px;
+    margin-left: 26px;
+    margin-right: 44px;
+
+    font-weight: 400;
+}
+
+.info-categoria {
+    width: 150px;
+
+    font-weight: 400;
+}
+
+.info-valor {
+    width: 117px;
+    margin-left: 65px;
+
+    font-weight: 700;
+}
+
+.horizontal-line {
+    border: 1px solid rgb(224, 224, 224)
+}
+
+.delete-icon {
+    margin-left: 15px;
+}
+
+.delete-confirmation {
+    position: absolute;
+    right: 78px;
+    top: 45px;
+
+    z-index: 1;
+    width: 160px;
+    height: 78px;
+
+    background-image: url('../../assets/delete_confirmation_modal.svg');
+    background-size: cover;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-question {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+
+    margin-top: 7px;
+    margin-bottom: 6px;
+}
+
+.delete-confirmation-btns {
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+}
+
+.sim-delete,
+.nao-delete,
+.delete-icon,
+.edit-icon {
+    cursor: pointer;
+}
+
+.sim-delete,
+.nao-delete {
+    width: 42px;
+    height: 22px;
+    border: none;
+    border-radius: 4px;
+
+    color: white;
+
+    font-family: 'Rubik', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sim-delete {
+    background-color: rgba(58, 159, 241, 1);
+}
+
+.nao-delete {
+    background-color: rgba(255, 87, 107, 1);
+}
+
+.delete-icon:hover,
+.edit-icon:hover {
+    transform: scale(1.1);
+}
