@@ -24,7 +24,7 @@ export default function Main() {
     const [openFilter, setOpenFilter] = useState(false)
     const [showModalRegister, setShowModalRegister] = useState(false)
     const [showModalUser, setShowModalUser] = useState(false)
-    const [isChronological, setIsChronological] = useState(false)
+    const [isChronological, setIsChronological] = useState(true)
     const [categoryList, setCategoryList] = useState([])
     const [modalType, setModalType] = useState(null)
     const [resetPage, setResetPage] = useState(false)
@@ -82,9 +82,7 @@ export default function Main() {
                     }
                 })
 
-            console.log(response.data);
             chronologicalOrder(response.data)
-            console.log(response.data);
             setTransactionArray(response.data);
         } catch (error) {
             return res.status(400).json(error.response.data.message)
@@ -104,7 +102,6 @@ export default function Main() {
 
 
     useEffect(() => {
-        console.log('useEffect 1 the Main - Só na Montagem');
         fetchCategoryList()
 
         return () => {
@@ -113,11 +110,9 @@ export default function Main() {
 
     useEffect(() => {
         if (!showModalRegister && noSelection) {
-            console.log('useEffect 2 - transaction array');
             createTransactionArray()
         }
         if (!showModalUser) {
-            console.log('useEffect 3 the Main - user data');
             fillUserData()
         }
 
@@ -198,7 +193,8 @@ export default function Main() {
                                         setModalType={setModalType}
                                         openModalRegister={openModalRegister}
                                         categoryList={categoryList}
-                                        setIsChronological={setIsChronological}
+                                        setResetPage={setResetPage}
+                                        resetPage={resetPage}
                                     />
                                 ))}
                             </div>
@@ -208,6 +204,7 @@ export default function Main() {
                                 token={token}
                                 openModalRegister={openModalRegister}
                                 setModalType={setModalType}
+                                resetPage={resetPage}
                             />
                         </div>
                     </div>

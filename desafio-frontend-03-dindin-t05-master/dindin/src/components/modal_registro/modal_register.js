@@ -67,7 +67,7 @@ export default function ModalRegister({
 
         } catch (error) {
             handleErrorMessage(error.response.data.message)
-            return console.log(error.response.data.message);
+            return
         }
 
         setShowModalRegister(false)
@@ -106,9 +106,6 @@ export default function ModalRegister({
     async function handleEditRegister(e) {
         e.preventDefault()
 
-        console.log(currentIdTransaction);
-
-
         if (!parseInt(form.data)) {
             return handleErrorMessage('Data inválida. Utilizar somente números')
         }
@@ -134,7 +131,7 @@ export default function ModalRegister({
             })
         } catch (error) {
             handleErrorMessage(error.response.data.message)
-            return console.log(error.response.data.message);
+            return;
         }
 
         setShowModalRegister(false)
@@ -193,7 +190,6 @@ export default function ModalRegister({
     }
 
     useEffect(() => {
-        console.log('useEffect 3 do modal_register');
         if (readyToFill) {
             if (form.tipo === 'entrada') { setEntryType(true) } else { setEntryType(false) }
             handleFormatValue(form.valor)
@@ -203,18 +199,15 @@ export default function ModalRegister({
         }
 
         return () => {
-            console.log('desmontei o useEffect 3 do modal_register');
         }
     }, [readyToFill])
 
 
     useEffect(() => {
-        console.log('Useeffect 1 do modal_register');
         if (modalType) { return }
         fetchTransactionData()
 
         return () => {
-            console.log('desmontei o useEffect 1 do modal_register');
         }
 
     }, [])

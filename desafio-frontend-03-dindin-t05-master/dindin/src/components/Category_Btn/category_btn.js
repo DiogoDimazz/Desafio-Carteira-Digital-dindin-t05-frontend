@@ -32,13 +32,11 @@ export default function CategoryBtn({
     }
 
     useEffect(() => {
-        console.log('useEffect do category btn');
         if (noSelection) {
             setLocalSelectedCategory(false)
         }
 
         return () => {
-            console.log('desmontei o category btn');
         }
     }, [clearClick])
 

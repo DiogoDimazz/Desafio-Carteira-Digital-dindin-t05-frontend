@@ -1,6 +1,6 @@
 import './styles.css'
 import CategoryBtn from '../Category_Btn/category_btn'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function FilterBox({
     categoryList,

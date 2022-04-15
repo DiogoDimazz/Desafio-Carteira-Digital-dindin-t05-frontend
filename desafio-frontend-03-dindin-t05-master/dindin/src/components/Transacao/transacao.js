@@ -16,7 +16,8 @@ export default function Transacao({
     setModalType,
     openModalRegister,
     categoryList,
-    setIsChronological
+    setResetPage,
+    resetPage
 }) {
 
     const [localDeleteBox, setLocalDeleteBox] = useState(deleteBoxOpen)
@@ -52,6 +53,7 @@ export default function Transacao({
         setDeleteBoxOpen(false)
         setLocalDeleteBox(false)
         createTransactionArray()
+        setResetPage(!resetPage)
     }
 
     function dateInfo(date) {
@@ -68,7 +70,6 @@ export default function Transacao({
         if (weekDayNumber === 5) { setWeekDay('Sexta') }
         if (weekDayNumber === 6) { setWeekDay('Sábado') }
 
-        console.log(formattedDate);
     }
 
     function categoryDescription() {
@@ -100,22 +101,18 @@ export default function Transacao({
     }
 
     useEffect(() => {
-        console.log('useEffect 3 do transacao');
 
         return () => {
-            console.log('desmontei - useEffect 3 do transacao');
         }
     }, [currentCategory])
 
 
     useEffect(() => {
-        console.log('useEffect 1 do transacao');
         setLocalDescription(transData.descricao)
         dateInfo(transData.data)
         categoryDescription()
 
         return () => {
-            console.log('desmontei - useEffect 1 do transacao');
         }
     }, [])
 

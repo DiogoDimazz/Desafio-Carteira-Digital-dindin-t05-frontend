@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './styles.css'
 import api from '../../services/api'
 
-export default function Resumo({ token, openModalRegister, setModalType }) {
+export default function Resumo({ token, openModalRegister, setModalType, resetPage }) {
     const [balance, setBalance] = useState({ credit: 0, debit: 0, total: 0 })
 
     const setComma = (v) => {
@@ -45,9 +45,8 @@ export default function Resumo({ token, openModalRegister, setModalType }) {
 
 
     useEffect(() => {
-        console.log('useEffect the Resumo');
         getBalance()
-    }, [])
+    }, [resetPage])
 
     return (
         <div className='resumo'>
