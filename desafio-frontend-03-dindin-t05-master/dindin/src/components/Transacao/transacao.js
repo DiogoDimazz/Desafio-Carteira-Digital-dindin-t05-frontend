@@ -15,7 +15,8 @@ export default function Transacao({
     setDeleteBoxOpen,
     setModalType,
     openModalRegister,
-    categoryList
+    categoryList,
+    setIsChronological
 }) {
 
     const [localDeleteBox, setLocalDeleteBox] = useState(deleteBoxOpen)
@@ -60,13 +61,14 @@ export default function Transacao({
         const weekDayNumber = getDay(timeDate)
 
         if (weekDayNumber === 0) { setWeekDay('Domingo') }
-        if (weekDayNumber === 1) { setWeekDay('Segunda-Feira') }
-        if (weekDayNumber === 2) { setWeekDay('Terça-Feira') }
-        if (weekDayNumber === 3) { setWeekDay('Quarta-Feira') }
-        if (weekDayNumber === 4) { setWeekDay('Quinta-Feira') }
-        if (weekDayNumber === 5) { setWeekDay('Sexta-Feira') }
+        if (weekDayNumber === 1) { setWeekDay('Segunda') }
+        if (weekDayNumber === 2) { setWeekDay('Terça') }
+        if (weekDayNumber === 3) { setWeekDay('Quarta') }
+        if (weekDayNumber === 4) { setWeekDay('Quinta') }
+        if (weekDayNumber === 5) { setWeekDay('Sexta') }
         if (weekDayNumber === 6) { setWeekDay('Sábado') }
 
+        console.log(formattedDate);
     }
 
     function categoryDescription() {

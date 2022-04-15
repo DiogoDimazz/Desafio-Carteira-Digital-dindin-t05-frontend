@@ -115,6 +115,14 @@
     margin-left: 95px;
 }
 
+.arrow-date-order {
+    cursor: pointer;
+}
+
+.arrow-date-order:hover {
+    transform: scale(1.3);
+}
+
 .date {
     display: flex;
     align-items: center;

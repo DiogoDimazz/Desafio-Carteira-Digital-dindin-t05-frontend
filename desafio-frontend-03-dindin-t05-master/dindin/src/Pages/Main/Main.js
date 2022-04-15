@@ -4,8 +4,10 @@ import Transacao from '../../components/Transacao/transacao'
 import Resumo from '../../components/Resumo/Resumo'
 import filterIcon from '../../assets/filtrar_icon.svg'
 import dateUpArrow from '../../assets/data_up_arrow.svg'
+import dateDownArrow from '../../assets/data_down_arrow.svg'
 import { useEffect, useState } from 'react'
 import { getItem } from '../../utils/storage'
+import { parseISO, format, getUnixTime } from 'date-fns'
 import api from '../../services/api'
 import ModalRegister from '../../components/modal_registro/modal_register'
 import FilterBox from '../../components/filter_box/filter_box'
@@ -22,6 +24,7 @@ export default function Main() {
     const [openFilter, setOpenFilter] = useState(false)
     const [showModalRegister, setShowModalRegister] = useState(false)
     const [showModalUser, setShowModalUser] = useState(false)
+    const [isChronological, setIsChronological] = useState(false)
     const [categoryList, setCategoryList] = useState([])
     const [modalType, setModalType] = useState(null)
     const [resetPage, setResetPage] = useState(false)
@@ -58,6 +61,18 @@ export default function Main() {
         }
     }
 
+    function chronologicalOrder(array) {
+        if (isChronological) {
+            array.sort((a, b) => {
+                return getUnixTime(parseISO(a.data)) - getUnixTime(parseISO(b.data))
+            })
+        } else {
+            array.sort((a, b) => {
+                return getUnixTime(parseISO(b.data)) - getUnixTime(parseISO(a.data))
+            })
+        }
+    }
+
     async function createTransactionArray(req, res) {
         try {
             const response = await api.get('/transacao',
@@ -67,6 +82,9 @@ export default function Main() {
                     }
                 })
 
+            console.log(response.data);
+            chronologicalOrder(response.data)
+            console.log(response.data);
             setTransactionArray(response.data);
         } catch (error) {
             return res.status(400).json(error.response.data.message)
@@ -76,6 +94,12 @@ export default function Main() {
 
     function openModalRegister() {
         setShowModalRegister(true)
+    }
+
+    function handleTransactionsOrder() {
+        chronologicalOrder(transactionArray)
+        setIsChronological(!isChronological)
+        setResetPage(!resetPage)
     }
 
 
@@ -138,7 +162,14 @@ export default function Main() {
                                 <div className='label-data'>
                                     <span className='date label'>
                                         Data
-                                        <img src={dateUpArrow} alt='arrow up' />
+                                        <img
+                                            src={isChronological
+                                                ? dateUpArrow
+                                                : dateDownArrow}
+                                            onClick={handleTransactionsOrder}
+                                            alt='arrow icon'
+                                            className='arrow-date-order'
+                                        />
                                     </span>
                                 </div>
                                 <div className='label-dia label'>
@@ -167,6 +198,7 @@ export default function Main() {
                                         setModalType={setModalType}
                                         openModalRegister={openModalRegister}
                                         categoryList={categoryList}
+                                        setIsChronological={setIsChronological}
                                     />
                                 ))}
                             </div>
