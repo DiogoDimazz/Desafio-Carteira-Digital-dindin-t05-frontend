@@ -1,38 +1,52 @@
 import { useEffect, useState } from 'react'
 import './styles.css'
+import api from '../../services/api'
 
-export default function Resumo({ transactionArray, openModalRegister, setModalType }) {
+export default function Resumo({ token, openModalRegister, setModalType, resetPage }) {
     const [balance, setBalance] = useState({ credit: 0, debit: 0, total: 0 })
 
-    function calcBalance() {
-        let inn = 0
-        let out = 0
+    const setComma = (v) => {
+        const value = (v / 100).toFixed(2)
+        return value.replace('.', ',')
+    }
 
-        transactionArray.forEach((trans) => {
-            if (trans.tipo === 'entrada') { return inn += trans.valor; }
-            if (trans.tipo === 'saida') { return out += trans.valor }
-        })
+    const adjustValues = (values) => {
+        const localCredit = setComma(values.entrada)
+        const localDebit = setComma(values.saida)
+        const localBalance = setComma((parseInt(values.entrada) + parseInt(values.saida)).toString())
         setBalance({
-            credit: inn,
-            debit: out,
-            total: (inn - out)
+            credit: localCredit,
+            debit: localDebit,
+            total: localBalance
         })
     }
 
+    async function getBalance(req, res) {
 
-    useEffect(() => {
-        calcBalance()
-    }, [transactionArray])
+        try {
+            const response = await api.get('/transacao/extrato', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            adjustValues(response.data)
+        } catch (error) {
+            return res.status(400).json(error.response.data.message)
+        }
+    }
+
+
 
     function handleOpenAddRegister() {
         setModalType(true)
         openModalRegister()
     }
 
-    const formattedValue = (v) => {
-        const value = (v / 100).toFixed(2)
-        return value.replace('.', ',')
-    }
+
+    useEffect(() => {
+        getBalance()
+    }, [resetPage])
 
     return (
         <div className='resumo'>
@@ -40,16 +54,16 @@ export default function Resumo({ transactionArray, openModalRegister, setModalTy
                 <strong>Resumo</strong>
                 <div className='entrada-div'>
                     <span className='entrada-span'>Entradas</span>
-                    <span className='entrada-value-span'>R$ {formattedValue(balance.credit)}</span>
+                    <span className='entrada-value-span'>R$ {balance.credit}</span>
                 </div>
                 <div className='saida-div'>
                     <span className='saida-span'>Saídas</span>
-                    <span className='saida-value-span'>R$ {formattedValue(balance.debit)}</span>
+                    <span className='saida-value-span'>R$ {balance.debit}</span>
                 </div>
                 <div className='short-horizontal-line'></div>
                 <div className='saldo-div'>
                     <span className='saldo-span'>Saldo</span>
-                    <span className='saldo-value-span'>R$ {formattedValue(balance.total)}</span>
+                    <span className='saldo-value-span'>R$ {balance.total}</span>
                 </div>
             </div>
             <button

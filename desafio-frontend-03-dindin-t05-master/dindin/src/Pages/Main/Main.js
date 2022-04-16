@@ -4,8 +4,10 @@ import Transacao from '../../components/Transacao/transacao'
 import Resumo from '../../components/Resumo/Resumo'
 import filterIcon from '../../assets/filtrar_icon.svg'
 import dateUpArrow from '../../assets/data_up_arrow.svg'
+import dateDownArrow from '../../assets/data_down_arrow.svg'
 import { useEffect, useState } from 'react'
 import { getItem } from '../../utils/storage'
+import { parseISO, format, getUnixTime } from 'date-fns'
 import api from '../../services/api'
 import ModalRegister from '../../components/modal_registro/modal_register'
 import FilterBox from '../../components/filter_box/filter_box'
@@ -15,13 +17,18 @@ import UserModal from '../../components/modal_user/modal_user'
 export default function Main() {
     const [deleteBoxOpen, setDeleteBoxOpen] = useState(false)
     const [transactionArray, setTransactionArray] = useState([])
+    const [noSelection, setNoSelection] = useState(true)
+    const [selectedCategories, setSelectedCategories] = useState([])
     const [transactionData, setTransactionData] = useState({})
     const [user, setUser] = useState({ id: null, name: '', email: '' })
     const [openFilter, setOpenFilter] = useState(false)
     const [showModalRegister, setShowModalRegister] = useState(false)
     const [showModalUser, setShowModalUser] = useState(false)
+    const [isChronological, setIsChronological] = useState(true)
     const [categoryList, setCategoryList] = useState([])
     const [modalType, setModalType] = useState(null)
+    const [resetPage, setResetPage] = useState(false)
+    const [clearClick, setClearClick] = useState(false)
     const token = getItem('token')
 
 
@@ -48,8 +55,21 @@ export default function Main() {
                 }
             })
             setCategoryList(response.data)
+            setResetPage(!resetPage)
         } catch (error) {
             res.status(400).json(error.response.data.message)
+        }
+    }
+
+    function chronologicalOrder(array) {
+        if (isChronological) {
+            array.sort((a, b) => {
+                return getUnixTime(parseISO(a.data)) - getUnixTime(parseISO(b.data))
+            })
+        } else {
+            array.sort((a, b) => {
+                return getUnixTime(parseISO(b.data)) - getUnixTime(parseISO(a.data))
+            })
         }
     }
 
@@ -62,14 +82,22 @@ export default function Main() {
                     }
                 })
 
+            chronologicalOrder(response.data)
             setTransactionArray(response.data);
         } catch (error) {
             return res.status(400).json(error.response.data.message)
         }
     }
 
+
     function openModalRegister() {
         setShowModalRegister(true)
+    }
+
+    function handleTransactionsOrder() {
+        chronologicalOrder(transactionArray)
+        setIsChronological(!isChronological)
+        setResetPage(!resetPage)
     }
 
 
@@ -78,22 +106,19 @@ export default function Main() {
 
         return () => {
         }
-    }, [transactionArray])
+    }, [])
 
     useEffect(() => {
-        createTransactionArray()
+        if (!showModalRegister && noSelection) {
+            createTransactionArray()
+        }
+        if (!showModalUser) {
+            fillUserData()
+        }
 
         return () => {
         }
-    }, [user])
-
-    useEffect(() => {
-        fillUserData()
-
-        return () => {
-        }
-    }, [showModalRegister, showModalUser, transactionArray])
-
+    }, [resetPage])
 
     return (
         <div className='body-clean'>
@@ -114,6 +139,16 @@ export default function Main() {
                     {openFilter &&
                         <FilterBox
                             categoryList={categoryList}
+                            selectedCategories={selectedCategories}
+                            setSelectedCategories={setSelectedCategories}
+                            transactionArray={transactionArray}
+                            setTransactionArray={setTransactionArray}
+                            setResetPage={setResetPage}
+                            resetPage={resetPage}
+                            clearClick={clearClick}
+                            setClearClick={setClearClick}
+                            noSelection={noSelection}
+                            setNoSelection={setNoSelection}
                         />
                     }
                     <div className='second-inner-container'>
@@ -122,7 +157,14 @@ export default function Main() {
                                 <div className='label-data'>
                                     <span className='date label'>
                                         Data
-                                        <img src={dateUpArrow} alt='arrow up' />
+                                        <img
+                                            src={isChronological
+                                                ? dateUpArrow
+                                                : dateDownArrow}
+                                            onClick={handleTransactionsOrder}
+                                            alt='arrow icon'
+                                            className='arrow-date-order'
+                                        />
                                     </span>
                                 </div>
                                 <div className='label-dia label'>
@@ -151,15 +193,18 @@ export default function Main() {
                                         setModalType={setModalType}
                                         openModalRegister={openModalRegister}
                                         categoryList={categoryList}
+                                        setResetPage={setResetPage}
+                                        resetPage={resetPage}
                                     />
                                 ))}
                             </div>
                         </div>
                         <div className='right-inner-container'>
                             <Resumo
-                                transactionArray={transactionArray}
+                                token={token}
                                 openModalRegister={openModalRegister}
                                 setModalType={setModalType}
+                                resetPage={resetPage}
                             />
                         </div>
                     </div>
@@ -171,6 +216,8 @@ export default function Main() {
                     user={user}
                     setUser={setUser}
                     token={token}
+                    resetPage={resetPage}
+                    setResetPage={setResetPage}
                 />
             }
             {showModalRegister &&
@@ -180,6 +227,8 @@ export default function Main() {
                     transactionData={transactionData}
                     categoryList={categoryList}
                     token={token}
+                    resetPage={resetPage}
+                    setResetPage={setResetPage}
                 />
             }
         </div>

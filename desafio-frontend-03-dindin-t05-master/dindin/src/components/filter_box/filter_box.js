@@ -2,14 +2,42 @@ import './styles.css'
 import CategoryBtn from '../Category_Btn/category_btn'
 import { useEffect, useState } from 'react'
 
-export default function FilterBox({ categoryList }) {
+export default function FilterBox({
+    categoryList,
+    selectedCategories,
+    setSelectedCategories,
+    transactionArray,
+    setTransactionArray,
+    setResetPage,
+    resetPage,
+    clearClick,
+    setClearClick,
+    noSelection,
+    setNoSelection }) {
     const [applyFilter, setApplyFilter] = useState(false)
-    const [selectedCategories, setSelectedCategories] = useState([])
-    const [noSelection, setNoSelection] = useState(true)
-    const [clearClick, setClearClick] = useState(false)
 
     function handleApplyFilter() {
+        if (noSelection) {
+            setApplyFilter(true)
+            setTimeout(() => {
+                setApplyFilter(false)
+            }, 100)
+            return
+        }
+        const filteredTransactions = []
+
+        transactionArray.filter((transaction) => {
+            selectedCategories.forEach((selected) => {
+                if (selected === transaction.categoria_id) {
+                    return filteredTransactions.push(transaction)
+                }
+            })
+        })
+
+        setTransactionArray([...filteredTransactions])
         setApplyFilter(!applyFilter)
+        setResetPage(!resetPage)
+
     }
 
     function handleClearFilter() {
@@ -17,6 +45,7 @@ export default function FilterBox({ categoryList }) {
         setSelectedCategories([])
         setApplyFilter(false)
         setNoSelection(true)
+        setResetPage(!resetPage)
 
         setTimeout(() => {
             setClearClick(false)
@@ -25,6 +54,8 @@ export default function FilterBox({ categoryList }) {
 
     useEffect(() => {
 
+        return () => {
+        }
     }, [noSelection])
 
     return (
@@ -34,12 +65,15 @@ export default function FilterBox({ categoryList }) {
                 <div className='category-list-box'>
                     {categoryList.map((category) => (
                         <CategoryBtn
+                            key={category.id}
                             category={category}
                             selectedCategories={selectedCategories}
                             setSelectedCategories={setSelectedCategories}
                             handleClearFilter={handleClearFilter}
                             noSelection={noSelection}
                             setNoSelection={setNoSelection}
+                            clearClick={clearClick}
+                            applyFilter={applyFilter}
                         />
                     ))}
                 </div>
@@ -56,11 +90,11 @@ export default function FilterBox({ categoryList }) {
                     Limpar Filtros
                 </button>
                 <button
+                    onClick={() => handleApplyFilter()}
                     className={applyFilter
                         ? 'aplicar-filtro-clicked'
                         : 'aplicar-filtro-btn'
                     }
-                    onClick={() => handleApplyFilter()}
                 >
                     Aplicar Filtros</button>
             </div>
